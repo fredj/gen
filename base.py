@@ -2,6 +2,7 @@
 
 # http://genealogy.stackexchange.com/questions/1431/how-do-i-access-my-data-natively-in-gramps
 
+from __future__ import print_function
 
 from gramps.gen.dbstate import DbState
 
@@ -12,37 +13,53 @@ from gramps.gen.lib import Person
 def callback(value):
     pass
 
+def has_valid_date(event):
+    return event.get_date_object().is_valid()
+
+def is_marriage(event):
+    event_type = event.get_type()
+    return event_type.value == event_type.MARRIAGE
+
+def is_marriage_banns(event):
+    event_type = event.get_type()
+    return event_type.value == event_type.MARR_BANNS
+
 dbclass = DbBsddb
 dbstate = DbState()
 dbstate.change_database(dbclass())
-dbstate.db.load('/home/fredj/.gramps/grampsdb/539da728', callback, 'r')
+dbstate.db.load('/home/fredj/.gramps/grampsdb/5465dae5', callback, 'r')
 
 
 db = dbstate.db
 
+print('nom pere,prenom pere,nom mere,prenom mere,date union,type union,naissance premier enfant,difference jours')
+
 for family in [db.get_family_from_handle(f) for f in db.get_family_handles()]:
-    father = db.get_person_from_handle(family.get_father_handle())
-    mother = db.get_person_from_handle(family.get_mother_handle())
+    # all events with a valid date
+    events = filter(has_valid_date, (db.get_event_from_handle(e.get_reference_handle()) for e in family.get_event_ref_list()))
 
-    print 'pere: ', father.get_primary_name().get_regular_name() if father is not None else '?'
-    print 'mere: ', mother.get_primary_name().get_regular_name() if mother is not None else '?'
+    # find marriage or fallback to banns
+    union = next((e for e in events if is_marriage(e)), next((e for e in events if is_marriage_banns(e)), None))
 
-    marriage_date = None
-    for event in [db.get_event_from_handle(e.get_reference_handle()) for e in family.get_event_ref_list()]:
-        date = event.get_date_object()
-        etype = event.get_type()
-        #print 'mariage: ', date if date.is_valid() else '?'
-        print etype, date if date.is_valid() else '?'
-        if date.is_valid():
-            marriage_date = date
+    if union is not None:
+        children = (db.get_person_from_handle(e.get_reference_handle()) for e in family.get_child_ref_list())
 
-    for child in [db.get_person_from_handle(e.get_reference_handle()) for e in family.get_child_ref_list()]:
-        birthRef = child.get_birth_ref()
-        if birthRef is not None:
-            birth = db.get_event_from_handle(birthRef.get_reference_handle())
+        birth_dates = []
+        for child_birth_ref in filter(None, (child.get_birth_ref() for child in children)):
+            birth = db.get_event_from_handle(child_birth_ref.get_reference_handle())
             date = birth.get_date_object()
             if date.is_valid():
-                diff = int(date - marriage_date) if marriage_date is not None else '?'
-                print 'naissance: ', date, '-', diff
+                birth_dates.append(date)
 
-    print '*' * 80
+        first_child_date = next(iter(sorted(birth_dates)), None)
+        if first_child_date is not None:
+            father = db.get_person_from_handle(family.get_father_handle()).get_primary_name()
+            mother = db.get_person_from_handle(family.get_mother_handle()).get_primary_name()
+
+            print(father.get_surname(), father.get_first_name(), sep=',', end=',')
+            print(mother.get_surname(), mother.get_first_name(), sep=',', end=',')
+            print(union.get_date_object(), end=',')
+            print(union.get_type(), end=',')
+            print(first_child_date, end=',')
+            print(int(first_child_date - union.get_date_object()), end=',')
+            print()
