@@ -1,13 +1,10 @@
 import pandas as pd
+from utils import to_datetime
 
 # FIXME: date format in output file (1 day offset)
 # FIXME: 'CAL yyyy' date format
 # FIXME: compute min and max presence (date)
 # FIXME: datetime unit in days instead of ns
-
-def to_datetime(data_frame, columns):
-    for column in columns:
-        data_frame[column] = pd.to_datetime(data_frame[column], errors='coerce')
 
 individus = pd.read_excel('Payerne.xls', 'Individuals', index_col=0)
 couples = pd.read_excel('Payerne.xls', 'Families', index_col=0)
