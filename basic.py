@@ -2,7 +2,6 @@ import pandas as pd
 
 # FIXME: date format in output file (1 day offset)
 # FIXME: 'CAL yyyy' date format
-# FIXME: order children births by date
 # FIXME: compute min and max presence (date)
 # FIXME: datetime unit in days instead of ns
 
@@ -44,16 +43,16 @@ for father_id, group in couples.groupby('FatherId'):
             final.at[father_id, final_name] = marriages[column]
 
 # children births
-for family_id, children in couples['Children'].iteritems():
-    if not pd.isnull(children):
-        mother_id = couples.ix[family_id, 'MotherId']
-        for index, child in enumerate(str(children).split(';'), 1):
-            columns = [('BIRT_DATE', 'BIRT_DATE_CHILD_%d' % index),
-                       ('_FIL', 'FIL_CHILD_%d' % index)]
-            for column, final_name in columns:
-                if final_name not in final:
-                    final[final_name] = None
-                final.at[mother_id, final_name] = individus.ix[int(child), column]
+for family_id, children_ids in couples['Children'].iteritems():
+    if not pd.isnull(children_ids):
+        children = individus.loc[map(int, str(children_ids).split(';')), 'BIRT_DATE']
+        children = children.sort_values()
+        children.index = ['BIRT_DATE_CHILD_%d' % i for i in range(1, len(children.index) + 1)]
+        mother_id = couples.loc[family_id, 'MotherId']
+        for column, birth_date in children.iteritems():
+            if column not in final:
+                final[column] = None
+            final.loc[mother_id, column] = birth_date
 
 
 final.to_excel('final.xls')
