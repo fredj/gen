@@ -1,5 +1,9 @@
 import pandas as pd
 
+# FIXME: date format in output file (1 day offset)
+# FIXME: 'CAL yyyy' date format
+# FIXME: order children births by date
+
 def to_datetime(data_frame, columns):
     for column in columns:
         data_frame[column] = pd.to_datetime(data_frame[column], errors='coerce')
@@ -14,8 +18,6 @@ to_datetime(couples, ['MARB_DATE', 'MARR_DATE'])
 couples = couples[(couples.MotherId != 0) & (couples.FatherId != 0)]
 
 final = individus[['Name', 'Gender', 'BIRT_DATE', 'CHR_DATE', 'DEAT_DATE']].copy()
-
-# individus[pd.notnull(individus.BIRT_DATE) & individus.BIRT_DATE.str.startswith('CAL')]
 
 # mothers marriages
 for mother_id, group in couples.groupby('MotherId'):
