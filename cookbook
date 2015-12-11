@@ -1,0 +1,16 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+births_by_year = individus.groupby(individus.BIRT_DATE.dt.year)
+births_by_year_count = pd.Series(births_by_year.size(), name='birth')
+death_by_year = individus.groupby(individus.DEAT_DATE.dt.year)
+death_by_year_count = pd.Series(death_by_year.size(), name='death')
+
+by_year = pd.concat([births_by_year_count, death_by_year_count], axis=1)
+
+by_year.plot()
+#by_year.loc[1790:1855].plot()
+
+plt.show()
