@@ -3,6 +3,8 @@ import pandas as pd
 # FIXME: date format in output file (1 day offset)
 # FIXME: 'CAL yyyy' date format
 # FIXME: order children births by date
+# FIXME: compute min and max presence (date)
+# FIXME: datetime unit in days instead of ns
 
 def to_datetime(data_frame, columns):
     for column in columns:
@@ -53,7 +55,5 @@ for family_id, children in couples['Children'].iteritems():
                     final[final_name] = None
                 final.at[mother_id, final_name] = individus.ix[int(child), column]
 
-
-# FIXME: compute min/max presence date
 
 final.to_excel('final.xls')
