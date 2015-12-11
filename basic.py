@@ -19,7 +19,8 @@ final = individus[['Name', 'Gender', 'BIRT_DATE', 'CHR_DATE', 'DEAT_DATE']].copy
 
 # mothers marriages
 for mother_id, group in couples.groupby('MotherId'):
-    for index, (_, marriages) in enumerate(group.iterrows(), 1):
+    sorted_group = group.sort_values(['MARB_DATE', 'MARR_DATE'])
+    for index, (_, marriages) in enumerate(sorted_group.iterrows(), 1):
         columns = [('MARB_DATE', 'MARB_DATE_%d' % index),
                    ('MARR_DATE', 'MARR_DATE_%d' % index)]
         for column, final_name in columns:
@@ -29,7 +30,8 @@ for mother_id, group in couples.groupby('MotherId'):
 
 # fathers marriages
 for father_id, group in couples.groupby('FatherId'):
-    for index, (_, marriages) in enumerate(group.iterrows(), 1):
+    sorted_group = group.sort_values(['MARB_DATE', 'MARR_DATE'])
+    for index, (_, marriages) in enumerate(sorted_group.iterrows(), 1):
         columns = [('MARB_DATE', 'MARB_DATE_%d' % index),
                    ('MARR_DATE', 'MARR_DATE_%d' % index)]
         for column, final_name in columns:
