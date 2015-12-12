@@ -25,7 +25,7 @@ for mother_id, group in couples.groupby('MotherId'):
                    ('MARR_DATE', 'MARR_DATE_%d' % index)]
         for column, final_name in columns:
             if final_name not in final:
-                final[final_name] = None
+                final[final_name] = pd.NaT
             final.at[mother_id, final_name] = marriages[column]
 
 # fathers marriages
@@ -36,7 +36,7 @@ for father_id, group in couples.groupby('FatherId'):
                    ('MARR_DATE', 'MARR_DATE_%d' % index)]
         for column, final_name in columns:
             if final_name not in final:
-                final[final_name] = None
+                final[final_name] = pd.NaT
             final.at[father_id, final_name] = marriages[column]
 
 # children births
@@ -48,7 +48,7 @@ for family_id, children_ids in couples['Children'].iteritems():
         mother_id = couples.loc[family_id, 'MotherId']
         for column, birth_date in children.iteritems():
             if column not in final:
-                final[column] = None
+                final[column] = pd.NaT
             final.loc[mother_id, column] = birth_date
 
 
