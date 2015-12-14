@@ -40,8 +40,6 @@ family_children['DIFF'] = (family_children['FIRST_CHILD'] - family_children['MAR
 # FIXME: simplify
 final = family_children[['FIRST_CHILD', 'DIFF']]
 final = final.set_index('FIRST_CHILD')
-# only between -1 year and +3 years
-final = final[(final.DIFF > -365) & (final.DIFF < 1095)]
 final = final.sort_index()
 
 r_mean = pd.rolling_mean(final['DIFF'], 30)
@@ -60,4 +58,5 @@ plt.plot(above.index, above.DIFF, marker='o', color='0.75', linestyle='')
 plt.plot(bellow.index, bellow.DIFF, marker='o', color='0.5',linestyle='')
 plt.fill_between(final.index, r_mean-r_std, r_mean+r_std, color='0.5')
 plt.plot(final.index, r_mean)
+plt.ylim(-2000, 4000)
 plt.show()
