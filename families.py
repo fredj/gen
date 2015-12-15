@@ -42,21 +42,22 @@ final = family_children[['FIRST_CHILD', 'DIFF']]
 final = final.set_index('FIRST_CHILD')
 final = final.sort_index()
 
-r_mean = pd.rolling_mean(final['DIFF'], 30)
-r_std = pd.rolling_std(final['DIFF'], 30)
-
-nine_months = 274
+q10 = pd.rolling_quantile(final['DIFF'], 40, 0.1)
+q50 = pd.rolling_quantile(final['DIFF'], 40, 0.5)
+q90 = pd.rolling_quantile(final['DIFF'], 40, 0.9)
 
 above = final[final.DIFF > nine_months]
 bellow = final[final.DIFF <= nine_months]
 
+nine_months = 274
+
+# %matplotlib inline
+
 plt.figure()
-# plt.axhline(0)
-# plt.axhline(nine_months)
-plt.fill_between(final.index, 0, nine_months, color='0.95', alpha=0.2)
-plt.plot(above.index, above.DIFF, marker='o', color='0.75', linestyle='')
-plt.plot(bellow.index, bellow.DIFF, marker='o', color='0.5',linestyle='')
-plt.fill_between(final.index, r_mean-r_std, r_mean+r_std, color='0.5')
-plt.plot(final.index, r_mean)
-plt.ylim(-2000, 4000)
-plt.show()
+# plt.plot(above.index, above.DIFF, marker='o', color='0.75', linestyle='')
+# plt.plot(bellow.index, bellow.DIFF, marker='o', color='0.5',linestyle='')
+plt.plot(final.index, final.DIFF, marker=',', color='0.75', linestyle='')
+plt.fill_between(final.index, 0, nine_months, color='0.6', alpha=0.2)
+plt.fill_between(final.index, q10, q90, color='0.3', alpha=0.2)
+plt.plot(final.index, q50)
+plt.ylim(-1000, 2000)
