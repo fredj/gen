@@ -1,7 +1,11 @@
+import datetime
 import pandas as pd
 import ggplot as gg
 import matplotlib.pyplot as plt
+import seaborn as sbn
+from scipy.stats import probplot
 from utils import to_datetime
+
 
 individus = pd.read_excel('Payerne.xls', 'Individuals', index_col=0)
 couples = pd.read_excel('Payerne.xls', 'Families', index_col=0)
@@ -42,6 +46,10 @@ final = family_children[['FIRST_CHILD', 'DIFF']]
 final = final.set_index('FIRST_CHILD')
 final = final.sort_index()
 
+#final = final[final.DIFF < 1095]
+
+nine_months = 274
+
 q10 = pd.rolling_quantile(final['DIFF'], 40, 0.1)
 q50 = pd.rolling_quantile(final['DIFF'], 40, 0.5)
 q90 = pd.rolling_quantile(final['DIFF'], 40, 0.9)
@@ -49,15 +57,32 @@ q90 = pd.rolling_quantile(final['DIFF'], 40, 0.9)
 above = final[final.DIFF > nine_months]
 bellow = final[final.DIFF <= nine_months]
 
-nine_months = 274
-
 # %matplotlib inline
+sbn.set_style('ticks')
 
 plt.figure()
 # plt.plot(above.index, above.DIFF, marker='o', color='0.75', linestyle='')
 # plt.plot(bellow.index, bellow.DIFF, marker='o', color='0.5',linestyle='')
-plt.plot(final.index, final.DIFF, marker=',', color='0.75', linestyle='')
-plt.fill_between(final.index, 0, nine_months, color='0.6', alpha=0.2)
+plt.plot(final.index, final.DIFF, marker='.', color='black',  alpha=0.25, linestyle='')
+plt.axhline(0, linewidth=0.5, color='black', linestyle='dotted')
+plt.axhline(nine_months, linewidth=0.5, color='black', linestyle='dotted')
+#plt.fill_between(final.index, 0, nine_months, color='0.6', alpha=0.2)
 plt.fill_between(final.index, q10, q90, color='0.3', alpha=0.2)
-plt.plot(final.index, q50)
+plt.plot(final.index, q50, linewidth=2)
+plt.xlim(plt.xlim(datetime.date(1790, 1, 1), datetime.date(1855, 1, 1)))
+plt.ylim(-1000, 2000)
+
+plt.ylabel('jours')
+
+ylocs, _ = plt.yticks()
+plt.yticks(sorted(list(ylocs) + [nine_months]))
+
+sbn.despine()
+
+
+sbn.distplot(final.DIFF, rug=True)
+probplot(final.DIFF, plot=plt)
+
+sbn.kdeplot(final.index.year, final.DIFF)
+plt.xlim(1790, 1855)
 plt.ylim(-1000, 2000)

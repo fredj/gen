@@ -1,6 +1,7 @@
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
+import seaborn as sbn
+from scipy.stats import probplot
+
+%matplotlib inline
 
 
 births_by_year = individus.groupby(individus.BIRT_DATE.dt.year)
@@ -10,7 +11,12 @@ death_by_year_count = pd.Series(death_by_year.size(), name='death')
 
 by_year = pd.concat([births_by_year_count, death_by_year_count], axis=1)
 
-by_year.plot()
-#by_year.loc[1790:1855].plot()
+#by_year.plot()
+by_year.loc[1790:1855].plot()
 
-plt.show()
+
+probplot(births_by_year_count, plot=plt)
+probplot(death_by_year_count, plot=plt)
+
+sbn.distplot(births_by_year_count, rug=True)
+sbn.distplot(death_by_year_count, rug=True)
