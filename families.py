@@ -60,18 +60,21 @@ q90 = pd.rolling_quantile(final['DIFF'], 40, 0.9)
 above = final[final.DIFF > nine_months]
 bellow = final[final.DIFF <= nine_months]
 
+jomini = final[final.CHILD_NAME.str.contains('JOMINI')]
+
 # %matplotlib inline
 sbn.set_style('ticks')
 
 plt.figure()
 # plt.plot(above.index, above.DIFF, marker='o', color='0.75', linestyle='')
 # plt.plot(bellow.index, bellow.DIFF, marker='o', color='0.5',linestyle='')
-plt.plot(final.index, final.DIFF, marker='.', color='black',  alpha=0.5, linestyle='')
+plt.plot(final.index, final.DIFF, marker='o', color='black', alpha=0.1, linestyle='')
+#plt.plot(jomini.index, jomini.DIFF, marker='s', color='red', linestyle='')
 plt.axhline(0, linewidth=0.5, color='black', linestyle='dotted')
 plt.axhline(nine_months, linewidth=0.5, color='black', linestyle='dotted')
 #plt.fill_between(final.index, 0, nine_months, color='0.6', alpha=0.2)
 #plt.fill_between(final.index, q10, q90, color='0.3', alpha=0.2)
-plt.plot(final.index, q50, linewidth=1)
+plt.plot(final.index, q50, linewidth=1, alpha=0.5)
 plt.xlim(plt.xlim(datetime.date(1790, 1, 1), datetime.date(1855, 1, 1)))
 plt.ylim(-500, 1500)
 
