@@ -1,16 +1,12 @@
 import pandas as pd
-from utils import to_datetime
+from utils import read_source
 
 # FIXME: date format in output file (1 day offset)
 # FIXME: 'CAL yyyy' date format
 # FIXME: compute min and max presence (date)
 # FIXME: datetime unit in days instead of ns
 
-individus = pd.read_excel('Payerne.xls', 'Individuals', index_col=0)
-couples = pd.read_excel('Payerne.xls', 'Families', index_col=0)
-# convert columns to datetime
-to_datetime(individus, ['BIRT_DATE', 'CHR_DATE', 'DEAT_DATE'])
-to_datetime(couples, ['MARB_DATE', 'MARR_DATE'])
+individus, couples = read_source()
 
 # remove marriage with unknown mother or father
 couples = couples[(couples.MotherId != 0) & (couples.FatherId != 0)]

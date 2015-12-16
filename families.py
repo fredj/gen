@@ -4,14 +4,9 @@ import ggplot as gg
 import matplotlib.pyplot as plt
 import seaborn as sbn
 from scipy.stats import probplot
-from utils import to_datetime
+from utils import read_source
 
-
-individus = pd.read_excel('Payerne.xls', 'Individuals', index_col=0)
-couples = pd.read_excel('Payerne.xls', 'Families', index_col=0)
-
-to_datetime(individus, ['BIRT_DATE', 'CHR_DATE'])
-to_datetime(couples, ['MARB_DATE', 'MARR_DATE'])
+individus, couples = read_source()
 
 family_children = couples[['MARB_DATE', 'MARR_DATE']].copy()
 
