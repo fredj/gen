@@ -26,14 +26,17 @@ family_children = family_children[~no_marb | ~no_marr]
 family_children.loc[no_marr, 'MARR_DATE'] = family_children.MARB_DATE + pd.Timedelta(days=21)
 
 family_children['FIRST_CHILD'] = pd.NaT
+family_children['CHILD_NAME'] = ''
 # first children birth
 for family_id, children_ids in couples['Children'].iteritems():
     if not pd.isnull(children_ids) and family_id in family_children.index:
-        children = individus.loc[map(int, str(children_ids).split(';')), 'BIRT_DATE']
-        children = children.dropna()
-        children = children.sort_values()
+        children = individus.loc[map(int, str(children_ids).split(';')), ['BIRT_DATE', 'Name']]
+        children = children[~children.BIRT_DATE.isnull()]
         if len(children) > 0:
-            family_children.loc[family_id, 'FIRST_CHILD'] = children.iloc[0]
+            children = children.sort_values('BIRT_DATE')
+            first_child = children.iloc[0]
+            family_children.loc[family_id, 'FIRST_CHILD'] = first_child['BIRT_DATE']
+            family_children.loc[family_id, 'CHILD_NAME'] = first_child['Name']
 
 # remove families without valid 'FIRST_CHILD'
 family_children = family_children[~pd.isnull(family_children.FIRST_CHILD)]
@@ -42,7 +45,7 @@ family_children = family_children[~pd.isnull(family_children.FIRST_CHILD)]
 family_children['DIFF'] = (family_children['FIRST_CHILD'] - family_children['MARR_DATE']).dt.days
 
 # FIXME: simplify
-final = family_children[['FIRST_CHILD', 'DIFF']]
+final = family_children[family_children.columns]
 final = final.set_index('FIRST_CHILD')
 final = final.sort_index()
 
