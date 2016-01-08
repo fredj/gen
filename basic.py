@@ -1,7 +1,7 @@
 import pandas as pd
 from utils import read_source
 
-# FIXME: date format in output file (1 day offset)
+# FIXME: date format in output file
 # FIXME: 'CAL yyyy' date format
 # FIXME: compute min and max presence (date)
 # FIXME: datetime unit in days instead of ns
@@ -41,11 +41,15 @@ for family_id, children_ids in couples['Children'].iteritems():
         children = individus.loc[map(int, str(children_ids).split(';')), 'BIRT_DATE']
         children = children.sort_values()
         children.index = ['BIRT_DATE_CHILD_%d' % i for i in range(1, len(children.index) + 1)]
+        # FIXME: compute mother's age at the last birth
         mother_id = couples.loc[family_id, 'MotherId']
         for column, birth_date in children.iteritems():
             if column not in final:
                 final[column] = pd.NaT
             final.loc[mother_id, column] = birth_date
-
+        # mean time between births
+        mean_diff_child = children.diff().mean()
+        if not pd.isnull(mean_diff_child):
+            final.loc[mother_id, 'MEAN_DIFF_CHILD'] = mean_diff_child.days
 
 final.to_excel('final.xls')
