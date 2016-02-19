@@ -37,12 +37,13 @@ for father_id, group in couples.groupby('FatherId'):
 
 # children births
 for family_id, children_ids in couples['Children'].iteritems():
+    mother_id = couples.loc[family_id, 'MotherId']
     if not pd.isnull(children_ids):
         children = individus.loc[map(int, str(children_ids).split(';')), 'BIRT_DATE']
         children = children.sort_values()
         children.index = ['BIRT_DATE_CHILD_%d' % i for i in range(1, len(children.index) + 1)]
         # FIXME: compute mother's age at the last birth
-        mother_id = couples.loc[family_id, 'MotherId']
+        final.loc[mother_id, 'CHILD_COUNT'] = len(children)
         for column, birth_date in children.iteritems():
             if column not in final:
                 final[column] = pd.NaT
@@ -51,7 +52,8 @@ for family_id, children_ids in couples['Children'].iteritems():
         mean_diff_child = children.diff().mean()
         if not pd.isnull(mean_diff_child):
             final.loc[mother_id, 'MEAN_DIFF_CHILD'] = mean_diff_child.days
-
+    else:
+        final.loc[mother_id, 'CHILD_COUNT'] = 0
 
 writer = pd.ExcelWriter('final.xls',  datetime_format='DD/MM/YYYY')
 final.to_excel(writer)
