@@ -1,7 +1,6 @@
 import pandas as pd
 from utils import read_source
 
-# FIXME: date format in output file
 # FIXME: 'CAL yyyy' date format
 # FIXME: compute min and max presence (date)
 # FIXME: datetime unit in days instead of ns
@@ -52,4 +51,7 @@ for family_id, children_ids in couples['Children'].iteritems():
         if not pd.isnull(mean_diff_child):
             final.loc[mother_id, 'MEAN_DIFF_CHILD'] = mean_diff_child.days
 
-final.to_excel('final.xls')
+
+writer = pd.ExcelWriter('final.xls',  datetime_format='DD/MM/YYYY')
+final.to_excel(writer)
+writer.close()
