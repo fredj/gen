@@ -1,6 +1,7 @@
 import pandas as pd
 from utils import read_source
 
+# FIXME: fix date in output xls (convert to string)
 # FIXME: 'CAL yyyy' date format
 # FIXME: compute min and max presence (date)
 # FIXME: datetime unit in days instead of ns
