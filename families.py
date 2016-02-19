@@ -33,6 +33,10 @@ family_children = family_children[~family_children.FIRST_CHILD.isnull()]
 # compute number of days between birth of the first child and the marriage date
 family_children['DIFF'] = (family_children['FIRST_CHILD'] - family_children['MARR_DATE']).dt.days
 
+# from 1790 to 1856
+# family_children = family_children[family_children.MARR_DATE > datetime.date(1790, 1, 1)]
+# family_children = family_children[family_children.MARR_DATE < datetime.date(1856, 1, 1)]
+
 # FIXME: simplify
 final = family_children[family_children.columns]
 final = final.set_index('FIRST_CHILD')
