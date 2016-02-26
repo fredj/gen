@@ -38,6 +38,8 @@ for father_id, group in couples.groupby('FatherId'):
 
 final['CHILD_COUNT'] = np.nan
 final['AGE_AT_LAST_CHILD'] = np.nan
+final['DIFF_CHILD'] = ''
+final['MEAN_DIFF_CHILD'] = np.nan
 # children births
 for family_id, children_ids in couples['Children'].iteritems():
     mother_id = couples.loc[family_id, 'MotherId']
@@ -66,6 +68,8 @@ for family_id, children_ids in couples['Children'].iteritems():
             if column not in final:
                 final[column] = pd.NaT
             final.loc[mother_id, column] = birth_date
+
+        final.loc[mother_id, 'DIFF_CHILD'] = ','.join([str(d.days) for d in children.diff() if not pd.isnull(d)])
         # mean time between births
         mean_diff_child = children.diff().mean()
         if not pd.isnull(mean_diff_child):
