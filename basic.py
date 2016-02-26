@@ -18,6 +18,14 @@ def get_union_date(marriage):
         return marr
     return np.nan
 
+
+def get_children_birthday(marriage):
+    children_ids = marriage['Children']
+    if not pd.isnull(children_ids):
+        children = individus.loc[map(int, str(children_ids).split(';')), 'BIRT_DATE']
+        return children.sort_values()
+    return pd.Series()
+
 individus, couples = read_source()
 
 # remove marriage with unknown mother or father
@@ -50,6 +58,13 @@ for gender_groups in [couples.groupby('MotherId'), couples.groupby('FatherId')]:
             if not pd.isnull(union_date) and not pd.isnull(birth_date):
                 final.at[person_id, column] = (union_date - birth_date).days / 365
 
+            column = 'DAYS_BEFORE_FIRST_CHILD_%d' % index
+            children_birthday = get_children_birthday(marriage)
+            first_child_index = children_birthday.first_valid_index()
+            if column not in final:
+                final[column] = np.nan
+            if not pd.isnull(union_date) and not pd.isnull(first_child_index):
+                final.at[person_id, column] = (children_birthday.loc[first_child_index] - union_date).days
 
 
 final['CHILD_COUNT'] = np.nan
