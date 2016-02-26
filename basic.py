@@ -64,13 +64,13 @@ for family_id, children_ids in couples['Children'].iteritems():
         children = individus.loc[map(int, str(children_ids).split(';')), 'BIRT_DATE']
         children = children.sort_values()
         children.index = ['BIRT_DATE_CHILD_%d' % i for i in range(1, len(children.index) + 1)]
-        last_child_bith_date_index = children.last_valid_index()
-        if not pd.isnull(last_child_bith_date_index):
-            # we have at least one bith date
-            last_child_bith_date = children[last_child_bith_date_index]
+        last_child_birth_date_index = children.last_valid_index()
+        if not pd.isnull(last_child_birth_date_index):
+            # we have at least one birth date
+            last_child_birth_date = children[last_child_birth_date_index]
             for person_id in [mother_id, father_id]:
                 # FIXME: test if the person lives after this birth
-                person_age_at_last_child = last_child_bith_date - final.loc[person_id, 'BIRT_DATE']
+                person_age_at_last_child = last_child_birth_date - final.loc[person_id, 'BIRT_DATE']
                 if not pd.isnull(person_age_at_last_child):
                     final.loc[person_id, 'AGE_AT_LAST_CHILD'] = person_age_at_last_child.days / 365
 
