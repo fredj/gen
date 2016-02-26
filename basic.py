@@ -55,7 +55,6 @@ for family_id, children_ids in couples['Children'].iteritems():
             if not pd.isnull(father_age_at_last_child):
                 final.loc[father_id, 'AGE_AT_LAST_CHILD'] = father_age_at_last_child.days / 365
 
-        # FIXME: compute mother's age at the last birth
         final.loc[mother_id, 'CHILD_COUNT'] = len(children)
         for column, birth_date in children.iteritems():
             if column not in final:
