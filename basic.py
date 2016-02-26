@@ -25,8 +25,6 @@ couples = couples[(couples.MotherId != 0) & (couples.FatherId != 0)]
 
 final = individus[['Name', 'Gender', 'BIRT_DATE', 'CHR_DATE', 'DEAT_DATE']].copy()
 
-final['AGE_AT_FIRST_MARRIAGE'] = np.nan
-
 # mothers and fathers marriages
 for gender_groups in [couples.groupby('MotherId'), couples.groupby('FatherId')]:
     for person_id, group in gender_groups:
@@ -39,10 +37,19 @@ for gender_groups in [couples.groupby('MotherId'), couples.groupby('FatherId')]:
                     final[final_name] = pd.NaT
                 final.at[person_id, final_name] = marriage[column]
 
+            union_date = get_union_date(marriage)
             column = 'MARR_CALC_%d' % index
             if column not in final:
                 final[column] = pd.NaT
-            final.at[person_id, column] = get_union_date(marriage)
+            final.at[person_id, column] = union_date
+
+            column = 'AGE_MARR_%d' % index
+            if column not in final:
+                final[column] = np.nan
+            birth_date = final.loc[person_id, 'BIRT_DATE']
+            if not pd.isnull(union_date) and not pd.isnull(birth_date):
+                final.at[person_id, column] = (union_date - birth_date).days / 365
+
 
 
 final['CHILD_COUNT'] = np.nan
