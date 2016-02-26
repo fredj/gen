@@ -45,15 +45,11 @@ for family_id, children_ids in couples['Children'].iteritems():
         if not pd.isnull(last_child_bith_date_index):
             # we have at least one bith date
             last_child_bith_date = children[last_child_bith_date_index]
-            # FIXME: test if the mother lives after this birth
-            mother_age_at_last_child = last_child_bith_date - final.loc[mother_id, 'BIRT_DATE']
-            if not pd.isnull(mother_age_at_last_child):
-                final.loc[mother_id, 'AGE_AT_LAST_CHILD'] = mother_age_at_last_child.days / 365
-
-            # FIXME: test if the father lives after this birth
-            father_age_at_last_child = last_child_bith_date - final.loc[father_id, 'BIRT_DATE']
-            if not pd.isnull(father_age_at_last_child):
-                final.loc[father_id, 'AGE_AT_LAST_CHILD'] = father_age_at_last_child.days / 365
+            for person_id in [mother_id, father_id]:
+                # FIXME: test if the person lives after this birth
+                person_age_at_last_child = last_child_bith_date - final.loc[person_id, 'BIRT_DATE']
+                if not pd.isnull(person_age_at_last_child):
+                    final.loc[person_id, 'AGE_AT_LAST_CHILD'] = person_age_at_last_child.days / 365
 
         final.loc[mother_id, 'CHILD_COUNT'] = len(children)
         for column, birth_date in children.iteritems():
