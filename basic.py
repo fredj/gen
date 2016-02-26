@@ -14,27 +14,20 @@ couples = couples[(couples.MotherId != 0) & (couples.FatherId != 0)]
 
 final = individus[['Name', 'Gender', 'BIRT_DATE', 'CHR_DATE', 'DEAT_DATE']].copy()
 
-# mothers marriages
-for mother_id, group in couples.groupby('MotherId'):
-    sorted_group = group.sort_values(['MARB_DATE', 'MARR_DATE'])
-    for index, (_, marriages) in enumerate(sorted_group.iterrows(), 1):
-        columns = [('MARB_DATE', 'MARB_DATE_%d' % index),
-                   ('MARR_DATE', 'MARR_DATE_%d' % index)]
-        for column, final_name in columns:
-            if final_name not in final:
-                final[final_name] = pd.NaT
-            final.at[mother_id, final_name] = marriages[column]
+final['AGE_AT_FIRST_MARRIAGE'] = np.nan
 
-# fathers marriages
-for father_id, group in couples.groupby('FatherId'):
-    sorted_group = group.sort_values(['MARB_DATE', 'MARR_DATE'])
-    for index, (_, marriages) in enumerate(sorted_group.iterrows(), 1):
-        columns = [('MARB_DATE', 'MARB_DATE_%d' % index),
-                   ('MARR_DATE', 'MARR_DATE_%d' % index)]
-        for column, final_name in columns:
-            if final_name not in final:
-                final[final_name] = pd.NaT
-            final.at[father_id, final_name] = marriages[column]
+# mothers and fathers marriages
+for gender_groups in [couples.groupby('MotherId'), couples.groupby('FatherId')]:
+    for person_id, group in gender_groups:
+        sorted_group = group.sort_values(['MARB_DATE', 'MARR_DATE'])
+        for index, (_, marriages) in enumerate(sorted_group.iterrows(), 1):
+            columns = [('MARB_DATE', 'MARB_DATE_%d' % index),
+                       ('MARR_DATE', 'MARR_DATE_%d' % index)]
+            for column, final_name in columns:
+                if final_name not in final:
+                    final[final_name] = pd.NaT
+                final.at[person_id, final_name] = marriages[column]
+
 
 final['CHILD_COUNT'] = np.nan
 final['AGE_AT_LAST_CHILD'] = np.nan
