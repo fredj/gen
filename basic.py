@@ -7,6 +7,17 @@ from utils import read_source
 # FIXME: compute min and max presence (date)
 # FIXME: datetime unit in days instead of ns
 
+
+def get_union_date(marriage):
+    marr = marriage['MARR_DATE']
+    if pd.isnull(marr):
+        marb = marriage['MARB_DATE']
+        if not pd.isnull(marb):
+            return marb + pd.Timedelta(days=21)
+    else:
+        return marr
+    return np.nan
+
 individus, couples = read_source()
 
 # remove marriage with unknown mother or father
@@ -20,13 +31,18 @@ final['AGE_AT_FIRST_MARRIAGE'] = np.nan
 for gender_groups in [couples.groupby('MotherId'), couples.groupby('FatherId')]:
     for person_id, group in gender_groups:
         sorted_group = group.sort_values(['MARB_DATE', 'MARR_DATE'])
-        for index, (_, marriages) in enumerate(sorted_group.iterrows(), 1):
+        for index, (_, marriage) in enumerate(sorted_group.iterrows(), 1):
             columns = [('MARB_DATE', 'MARB_DATE_%d' % index),
                        ('MARR_DATE', 'MARR_DATE_%d' % index)]
             for column, final_name in columns:
                 if final_name not in final:
                     final[final_name] = pd.NaT
-                final.at[person_id, final_name] = marriages[column]
+                final.at[person_id, final_name] = marriage[column]
+
+            column = 'MARR_CALC_%d' % index
+            if column not in final:
+                final[column] = pd.NaT
+            final.at[person_id, column] = get_union_date(marriage)
 
 
 final['CHILD_COUNT'] = np.nan
