@@ -1,0 +1,17 @@
+ESTIM_BIRT_DATE: estimated date of birth, whether:
+
+ - BIRT_DATE
+ - 'ABT'|'AFT'|'BEF'|'CAL' DD MMM YYYY -> DD MMM YYYY
+ - 'ABT'|'AFT'|'BEF'|'CAL' MMM YYYY    -> 1 MMM YYYY
+ - MMM YYYY                            -> 1 MMM YYYY
+ - 'ABT'|'AFT'|'BEF'|'CAL' YYYY        -> 1 JUL YYYY
+ - YYYY                                -> 1 JUL YYYY
+
+Used by:
+ - AGE_MARR_x
+ - AGE_AT_LAST_CHILD
+
+
+FIXME:
+ - Use 'CHR_DATE - 30 days' in ESTIM_BIRT_DATE
+ 
