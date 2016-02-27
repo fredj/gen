@@ -31,7 +31,7 @@ individus, couples = read_source()
 # remove marriage with unknown mother or father
 couples = couples[(couples.MotherId != 0) & (couples.FatherId != 0)]
 
-final = individus[['Name', 'Gender', 'BIRT_DATE', 'CHR_DATE', 'DEAT_DATE']].copy()
+final = individus[['Name', 'Gender', 'BIRT_DATE', 'ESTIM_BIRT_DATE', 'CHR_DATE', 'DEAT_DATE']].copy()
 
 # mothers and fathers marriages
 for gender_groups in [couples.groupby('MotherId'), couples.groupby('FatherId')]:
@@ -54,7 +54,7 @@ for gender_groups in [couples.groupby('MotherId'), couples.groupby('FatherId')]:
             column = 'AGE_MARR_%d' % index
             if column not in final:
                 final[column] = np.nan
-            birth_date = final.loc[person_id, 'BIRT_DATE']
+            birth_date = final.loc[person_id, 'ESTIM_BIRT_DATE']
             if not pd.isnull(union_date) and not pd.isnull(birth_date):
                 final.at[person_id, column] = (union_date - birth_date).days / 365
 
@@ -85,7 +85,7 @@ for family_id, children_ids in couples['Children'].iteritems():
             last_child_birth_date = children[last_child_birth_date_index]
             for person_id in [mother_id, father_id]:
                 # FIXME: test if the person lives after this birth
-                person_age_at_last_child = last_child_birth_date - final.loc[person_id, 'BIRT_DATE']
+                person_age_at_last_child = last_child_birth_date - final.loc[person_id, 'ESTIM_BIRT_DATE']
                 if not pd.isnull(person_age_at_last_child):
                     final.loc[person_id, 'AGE_AT_LAST_CHILD'] = person_age_at_last_child.days / 365
 
