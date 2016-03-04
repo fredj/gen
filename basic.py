@@ -117,3 +117,6 @@ for gender_groups in [couples.groupby('MotherId'), couples.groupby('FatherId')]:
 
 writer = pd.ExcelWriter('final.xls',  datetime_format='DD/MM/YYYY')
 final.to_excel(writer, sheet_name='Individuals')
+
+writer.save()
+writer.close()
