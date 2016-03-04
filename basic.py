@@ -15,7 +15,7 @@ def get_union_date(marriage):
         return mare
 
     marb = marriage['MARB_DATE']
-    if not pd.isnull(mare) and not pd.isnull(marr):
+    if not pd.isnull(marb):
         return marb + pd.Timedelta(days=21)
 
     return np.nan
