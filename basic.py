@@ -2,10 +2,6 @@ import pandas as pd
 import numpy as np
 from utils import read_source
 
-# FIXME: fix date in output xls (convert to string)
-# FIXME: 'CAL yyyy' date format
-# FIXME: compute min and max presence (date)
-# FIXME: datetime unit in days instead of ns
 
 
 def get_union_date(marriage):
