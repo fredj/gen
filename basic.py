@@ -112,7 +112,7 @@ for name, data_frame in by_year.items():
     data_frame_by_year = data_frame.groupby(data_frame.MARR_CALC_1.dt.year).count()
     data_frame_by_year = data_frame_by_year[['DAYS_BEFORE_FIRST_CHILD_1']]
     # divide value by two because we have one entry for the father and one for the mother
-    data_frame_by_year.apply(lambda count: count / 2)
+    data_frame_by_year = data_frame_by_year.apply(lambda count: count / 2)
     data_frame_by_year.columns = [name]
     data_frame_by_year.to_excel(writer, sheet_name=name)
 
