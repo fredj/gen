@@ -6,12 +6,18 @@ from utils import read_source
 
 def get_union_date(marriage):
     marr = marriage['MARR_DATE']
-    if pd.isnull(marr):
-        marb = marriage['MARB_DATE']
-        if not pd.isnull(marb):
-            return marb + pd.Timedelta(days=21)
-    else:
+    if not pd.isnull(marr):
         return marr
+
+    # civil union
+    mare = marriage['EVEN_DATE']
+    if not pd.isnull(mare):
+        return mare
+
+    marb = marriage['MARB_DATE']
+    if not pd.isnull(mare) and not pd.isnull(marr):
+        return marb + pd.Timedelta(days=21)
+
     return np.nan
 
 
@@ -38,7 +44,7 @@ final = individus[['Name', 'Gender', 'BIRT_DATE', 'CHR_DATE', 'ESTIM_BIRT_DATE',
 # mothers and fathers marriages
 for gender_groups in [couples.groupby('MotherId'), couples.groupby('FatherId')]:
     for person_id, group in gender_groups:
-        sorted_group = group.sort_values(['MARB_DATE', 'MARR_DATE'])
+        sorted_group = group.sort_values(['MARR_DATE', 'EVEN_DATE', 'MARB_DATE'])
         birth_date = final.loc[person_id, 'ESTIM_BIRT_DATE']
         for index, (_, marriage) in enumerate(sorted_group.iterrows(), 1):
             columns = [('MARB_DATE', 'MARB_DATE_%d' % index),

@@ -20,7 +20,7 @@ def read_source():
 
     # convert columns to datetime
     to_datetime(individus, ['BIRT_DATE', 'ESTIM_BIRT_DATE', 'CHR_DATE', 'DEAT_DATE'])
-    to_datetime(couples, ['MARB_DATE', 'MARR_DATE'])
+    to_datetime(couples, ['MARB_DATE', 'MARR_DATE', 'EVEN_DATE'])
     return individus, couples
 
 
