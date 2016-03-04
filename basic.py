@@ -27,7 +27,7 @@ individus, couples = read_source()
 # remove marriage with unknown mother or father
 couples = couples[(couples.MotherId != 0) & (couples.FatherId != 0)]
 
-final = individus[['Name', 'Gender', 'BIRT_DATE', 'ESTIM_BIRT_DATE', 'CHR_DATE', 'DEAT_DATE']].copy()
+final = individus[['Name', 'Gender', 'BIRT_DATE', 'CHR_DATE', 'ESTIM_BIRT_DATE', 'DEAT_DATE']].copy()
 
 # mothers and fathers marriages
 for gender_groups in [couples.groupby('MotherId'), couples.groupby('FatherId')]:
