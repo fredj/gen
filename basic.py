@@ -100,5 +100,22 @@ for family_id, children_ids in couples['Children'].iteritems():
         final.loc[mother_id, 'CHILD_COUNT'] = 0
 
 writer = pd.ExcelWriter('final.xls',  datetime_format='DD/MM/YYYY')
-final.to_excel(writer)
+final.to_excel(writer, sheet_name='Individuals')
+
+
+by_year = {
+    'Illegitimate': final[(final.DAYS_BEFORE_FIRST_CHILD_1 < 0)],
+    'Pre-nuptial': final[(final.DAYS_BEFORE_FIRST_CHILD_1 > 0) & (final.DAYS_BEFORE_FIRST_CHILD_1 < 274)],
+}
+
+for name, data_frame in by_year.items():
+    data_frame_by_year = data_frame.groupby(data_frame.MARR_CALC_1.dt.year).count()
+    data_frame_by_year = data_frame_by_year[['DAYS_BEFORE_FIRST_CHILD_1']]
+    # divide value by two because we have one entry for the father and one for the mother
+    data_frame_by_year.apply(lambda count: count / 2)
+    data_frame_by_year.columns = [name]
+    data_frame_by_year.to_excel(writer, sheet_name=name)
+
+
+writer.save()
 writer.close()
