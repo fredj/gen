@@ -3,7 +3,7 @@ import numpy as np
 from utils import read_source
 
 
-
+# returns the best possible union date
 def get_union_date(marriage):
     marr = marriage['MARR_DATE']
     if not pd.isnull(marr):
@@ -36,10 +36,13 @@ def format_date(date):
 
 individus, couples = read_source()
 
-# remove marriage with unknown mother or father
+# remove marriages with unknown mother or father
 couples = couples[(couples.MotherId != 0) & (couples.FatherId != 0)]
 
 final = individus[['Name', 'Gender', 'BIRT_DATE', 'CHR_DATE', 'ESTIM_BIRT_DATE', 'DEAT_DATE']].copy()
+
+age_in_days = final.DEAT_DATE - final.ESTIM_BIRT_DATE
+final['AGE_AT_DEATH'] = (age_in_days[age_in_days.notnull()].dt.days / 365).astype(int)
 
 # mothers and fathers marriages
 for gender_groups in [couples.groupby('MotherId'), couples.groupby('FatherId')]:
@@ -110,7 +113,6 @@ for gender_groups in [couples.groupby('MotherId'), couples.groupby('FatherId')]:
             if not pd.isnull(last_child_index) and not pd.isnull(birth_date):
                 # we have at least one birth date
                 last_child_birth_date = children_birthday[last_child_index]
-                # FIXME: test if the person lives after this birth
                 person_age_at_last_child = last_child_birth_date - birth_date
                 if not pd.isnull(person_age_at_last_child):
                     final.loc[person_id, column] = person_age_at_last_child.days / 365
