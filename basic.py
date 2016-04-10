@@ -29,6 +29,15 @@ def get_children_birthday(marriage):
     return pd.Series()
 
 
+def get_partner_id(person_id, marriage):
+    if marriage['MotherId'] == person_id:
+        return marriage['FatherId']
+    elif marriage['FatherId'] == person_id:
+        return marriage['MotherId']
+    else:
+        raise AssertionError
+
+
 def format_date(date):
     # http://blog.sneawo.com/blog/2015/04/08/strftime-for-datetime-before-1900-year/
     # date.strftime('%d/%m/%Y')
@@ -80,9 +89,12 @@ for gender_groups in [couples.groupby('MotherId'), couples.groupby('FatherId')]:
                 final.at[person_id, column] = (union_date - birth_date).days / 365
 
             children_birthday = get_children_birthday(marriage)
+            children_birthday_diff = children_birthday.diff()
             first_child_index = children_birthday.first_valid_index()
             last_child_index = children_birthday.last_valid_index()
-            children_birthday_diff = children_birthday.diff()
+            last_child_birth_date = np.nan
+            if not pd.isnull(last_child_index):
+                last_child_birth_date = children_birthday[last_child_index]
 
             column = 'CHILD_COUNT_%d' % index
             if column not in final:
@@ -110,12 +122,22 @@ for gender_groups in [couples.groupby('MotherId'), couples.groupby('FatherId')]:
             column = 'AGE_AT_LAST_CHILD_%d' % index
             if column not in final:
                 final[column] = np.nan
-            if not pd.isnull(last_child_index) and not pd.isnull(birth_date):
+            if not pd.isnull(last_child_birth_date) and not pd.isnull(birth_date):
                 # we have at least one birth date
-                last_child_birth_date = children_birthday[last_child_index]
                 person_age_at_last_child = last_child_birth_date - birth_date
                 if not pd.isnull(person_age_at_last_child):
                     final.loc[person_id, column] = person_age_at_last_child.days / 365
+
+            column = 'POSSIBLE_CPT_BY_STOPING_%d' % index
+            if column not in final:
+                final[column] = ''
+            if not pd.isnull(last_child_birth_date):
+                death_date = final.loc[person_id, 'DEAT_DATE']
+                partner_death_date = final.loc[get_partner_id(person_id, marriage), 'DEAT_DATE']
+                if not pd.isnull(death_date) and not pd.isnull(partner_death_date):
+                    lives_enough_after = (death_date - last_child_birth_date).days > 900
+                    partner_lives_enough_after = (partner_death_date - last_child_birth_date).days > 900
+                    final.loc[person_id, column] = lives_enough_after and partner_lives_enough_after
 
             column = 'CHILDREN_BIRTHDAY_%d' % index
             if column not in final:
