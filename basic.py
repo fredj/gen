@@ -48,7 +48,7 @@ individus, couples = read_source()
 # remove marriages with unknown mother or father
 couples = couples[(couples.MotherId != 0) & (couples.FatherId != 0)]
 
-final = individus[['Name', 'Gender', 'BIRT_DATE', 'CHR_DATE', 'ESTIM_BIRT_DATE', 'DEAT_DATE']].copy()
+final = individus.copy()
 
 age_in_days = final.DEAT_DATE - final.ESTIM_BIRT_DATE
 final['AGE_AT_DEATH'] = (age_in_days[age_in_days.notnull()].dt.days / 365).astype(int)
