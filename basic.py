@@ -41,7 +41,8 @@ def get_partner_id(person_id, marriage):
 def format_date(date):
     # http://blog.sneawo.com/blog/2015/04/08/strftime-for-datetime-before-1900-year/
     # date.strftime('%d/%m/%Y')
-    return '{0.day:02d}/{0.month:02d}/{0.year:4d}'.format(date)
+    if not pd.isnull(date):
+        return '{0.day:02d}/{0.month:02d}/{0.year}'.format(date)
 
 individus, couples = read_source()
 
