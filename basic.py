@@ -64,8 +64,8 @@ for gender_groups in [couples.groupby('MotherId'), couples.groupby('FatherId')]:
                        ('MARR_DATE', 'MARR_DATE_%d' % index)]
             for column, final_name in columns:
                 if final_name not in final:
-                    final[final_name] = pd.NaT
-                final.at[person_id, final_name] = marriage[column]
+                    final[final_name] = ''
+                final.at[person_id, final_name] = format_date(marriage[column])
 
             # column = 'MARR_ID_%d' % index
             # if column not in final:
@@ -80,8 +80,8 @@ for gender_groups in [couples.groupby('MotherId'), couples.groupby('FatherId')]:
             union_date = get_union_date(marriage)
             column = 'MARR_CALC_%d' % index
             if column not in final:
-                final[column] = pd.NaT
-            final.at[person_id, column] = union_date
+                final[column] = ''
+            final.at[person_id, column] = format_date(union_date)
 
             column = 'AGE_MARR_%d' % index
             if column not in final:
@@ -146,7 +146,11 @@ for gender_groups in [couples.groupby('MotherId'), couples.groupby('FatherId')]:
             final.at[person_id, column] = ' '.join([format_date(d) for d in children_birthday if not pd.isnull(d)])
 
 
-writer = pd.ExcelWriter('final.xls',  datetime_format='DD/MM/YYYY')
+# FIXME: discover columns type
+for col in ['BIRT_DATE', 'ESTIM_BIRT_DATE', 'CHR_DATE', 'DEAT_DATE']:
+    final[col] = final[col].apply(format_date)
+
+writer = pd.ExcelWriter('final.xls')
 final.to_excel(writer, sheet_name='Individuals')
 
 writer.save()

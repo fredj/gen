@@ -16,4 +16,3 @@ FIXME:
  - Handle 'YYYY' (cast BIRT_DATE to string)
  - Use 'CHR_DATE - 30 days' in ESTIM_BIRT_DATE
  - Compute min and max presence (date)
- - Fix date in output xls (before 1900, convert to string)
