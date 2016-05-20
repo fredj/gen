@@ -1,3 +1,4 @@
+from datetime import datetime
 import pandas as pd
 import numpy as np
 from utils import read_source
@@ -82,6 +83,12 @@ for gender_groups in [couples.groupby('MotherId'), couples.groupby('FatherId')]:
             if column not in final:
                 final[column] = ''
             final.at[person_id, column] = format_date(union_date)
+
+            column = 'MARR_DATE_OK_%d' % index
+            if column not in final:
+                final[column] = ''
+            if not pd.isnull(union_date):
+                final.at[person_id, column] = union_date > datetime(1790, 1, 1) and union_date < datetime(1850, 1, 1)
 
             column = 'AGE_MARR_%d' % index
             if column not in final:
