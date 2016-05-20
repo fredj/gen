@@ -127,6 +127,12 @@ for gender_groups in [couples.groupby('MotherId'), couples.groupby('FatherId')]:
             if not pd.isnull(union_date) and not pd.isnull(first_child_index):
                 final.at[person_id, column] = (children_birthday.loc[first_child_index] - union_date).days
 
+            column = 'LAST_CHILD_DATE_OK_%d' % index
+            if column not in final:
+                final[column] = ''
+            if not pd.isnull(last_child_birth_date):
+                final.at[person_id, column] = last_child_birth_date < datetime(1850, 1, 1)
+
             column = 'AGE_AT_LAST_CHILD_%d' % index
             if column not in final:
                 final[column] = np.nan
